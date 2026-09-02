@@ -61,7 +61,6 @@ function AddMovie() {
             navigate("/movies");
         } catch (error) {
             setError("Failed to Add Movie.");
-            console.error(error);
         }
     };
     return (
@@ -79,6 +78,11 @@ function AddMovie() {
 
 
             <form onSubmit={handleSubmit}>
+                {error && (
+                    <p className="text-center text-red-500 mb-4">
+                        {error}
+                    </p>
+                )}
                 <div className="bg-white max-w-4xl mx-auto px-4 py-4">
                     <input type="text"
                         name="name"

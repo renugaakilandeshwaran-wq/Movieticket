@@ -1,4 +1,3 @@
-import type { Movie } from "../types/movie";
 import api from "../services/api";
 import { useNavigate, useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
