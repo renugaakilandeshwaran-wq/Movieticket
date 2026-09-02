@@ -1,0 +1,150 @@
+{
+  "movies": [
+    {
+      "id": "1",
+      "name": "Leo",
+      "poster": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=500&q=80",
+      "genre": "Action",
+      "language": "Malayalam",
+      "duration": "2h 44m",
+      "releaseDate": "2023-10-19",
+      "rating": 10,
+      "status": "Now Showing",
+      "description": "A former gangster is forced to confront his violent past."
+    },
+    {
+      "id": "2",
+      "name": "Coolie",
+      "poster": "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=500&q=80",
+      "genre": "Action",
+      "language": "Tamil",
+      "duration": "2h 30m",
+      "releaseDate": "2026-08-14",
+      "rating": 8.2,
+      "status": "Now Showing",
+      "description": "An action-packed Tamil movie."
+    },
+    {
+      "id": "3",
+      "name": "Avatar",
+      "poster": "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=500&q=80",
+      "genre": "Sci-Fi",
+      "language": "English",
+      "duration": "2h 45m",
+      "releaseDate": "2026-12-18",
+      "rating": 8,
+      "status": "Upcoming",
+      "description": "A science fiction adventure."
+    }
+  ],
+  "theatres": [
+    {
+      "id": "1",
+      "name": "PVR Cinemas"
+    },
+    {
+      "id": "2",
+      "name": "INOX"
+    },
+    {
+      "id": "3",
+      "name": "AGS Cinemas"
+    }
+  ],
+  "shows": [
+    {
+      "movieId": "1",
+      "theatreId": "1",
+      "screen": "screen  2",
+      "date": "2023-11-12",
+      "showTime": "10:30",
+      "ticketPrice": 250,
+      "availableSeats": 30,
+      "id": "QIF3Irl8gq4"
+    },
+    {
+      "movieId": "1",
+      "theatreId": "2",
+      "screen": "screen 3",
+      "date": "2021-02-01",
+      "showTime": "11:30",
+      "ticketPrice": 250,
+      "availableSeats": 20,
+      "id": "w6sCZqzjons"
+    }
+  ],
+  "bookings": [
+    {
+      "id": "1",
+      "customerName": "Demo User",
+      "email": "demo@example.com",
+      "phone": "9876543210",
+      "movieId": "1",
+      "theatreId": "1",
+      "showId": "1",
+      "date": "2026-08-30",
+      "showTime": "06:30 PM",
+      "seats": [
+        "A1",
+        "A2"
+      ],
+      "numberOfTickets": 2,
+      "totalAmount": 400,
+      "bookingStatus": "Confirmed"
+    },
+    {
+      "customerName": "Rupan",
+      "email": "deepa20@gmail.com",
+      "phone": "9876543212",
+      "showId": "QIF3Irl8gq4",
+      "seats": [
+        2
+      ],
+      "numberOfTickets": 1,
+      "totalAmount": 250,
+      "bookingStatus": "Confirmed",
+      "id": "qrB9HnMc-_k"
+    },
+    {
+      "customerName": "Deepan",
+      "email": "deepa20@gmail.com",
+      "phone": "9876543212",
+      "showId": "QIF3Irl8gq4",
+      "seats": [
+        24
+      ],
+      "numberOfTickets": 1,
+      "totalAmount": 250,
+      "bookingStatus": "Confirmed",
+      "id": "LwjgbOnt4wQ"
+    },
+    {
+      "customerName": "Lalitha",
+      "email": "lali40@gmail.com",
+      "phone": "9098765423",
+      "showId": "w6sCZqzjons",
+      "seats": [
+        4
+      ],
+      "numberOfTickets": 1,
+      "totalAmount": 250,
+      "bookingStatus": "Confirmed",
+      "id": "5_uwIdPjTow"
+    },
+    {
+      "customerName": "kavin",
+      "email": "Kavin33@gmail.com",
+      "phone": "1223456784",
+      "showId": "QIF3Irl8gq4",
+      "seats": [
+        3,
+        2
+      ],
+      "numberOfTickets": 2,
+      "totalAmount": 500,
+      "bookingStatus": "Confirmed",
+      "id": "ONtdZeu0nsA"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
