@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 type Booking = {
     id: string;
@@ -20,6 +20,25 @@ function Bookings() {
     const [theatres, setTheatres] = useState<any[]>([]);
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
+
+    const location = useLocation();
+
+    const [successMessage, setSuccessMessage] = useState("");
+
+    useEffect(() => {
+        if (location.state?.bookingSuccess) {
+            setSuccessMessage("Booking Successful!");
+
+            window.history.replaceState({}, document.title);
+
+            const timer = setTimeout(() => {
+                setSuccessMessage("");
+            }, 3000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [location.state]);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -109,7 +128,11 @@ function Bookings() {
                 <h1 className="mb-6 text-3xl font-bold">
                     Bookings
                 </h1>
-
+                {successMessage && (
+                    <div className="mb-6 rounded-lg bg-green-100 p-4 text-center font-medium text-green-700">
+                        ✅ {successMessage}
+                    </div>
+                )}
                 {bookings.length === 0 ? (
                     <div className="rounded-lg bg-white p-10 text-center shadow">
                         No Bookings Available.
@@ -187,16 +210,21 @@ function Bookings() {
                                     Total: ₹{booking.totalAmount}
                                 </p>
 
-                                <span className="mt-3 inline-block rounded-full bg-green-100 px-3 py-1 text-sm text-green-700">
+                                <span
+                                    className={`mt-3 inline-block rounded-full px-3 py-1 text-sm ${booking.bookingStatus === "Cancelled"
+                                        ? "bg-red-100 text-red-700"
+                                        : "bg-green-100 text-green-700"
+                                        }`}
+                                >
                                     {booking.bookingStatus}
                                 </span>
 
-                                <div className="mt-4 flex justify-between items-center gap-2">
+                                <div className="mt-4 flex  flex-wrap justify-between items-center gap-2">
 
 
                                     <Link
                                         to={`/bookings/${booking.id}/edit`}
-                                        className="rounded-lg bg-yellow-200 px-4 py-2 text-yellow-800"
+                                        className="rounded-lg  bg-yellow-200 px-4 py-2 text-yellow-800"
                                     >
                                         Edit
                                     </Link>

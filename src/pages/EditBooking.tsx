@@ -14,6 +14,24 @@ type Booking = {
     bookingStatus: string;
 };
 
+type BookingItem = {
+    id: string;
+    showId: string;
+    seats: number[];
+    bookingStatus: string;
+
+};
+
+type Show = {
+    id: string;
+    movieId: string;
+    theatreId: string;
+    screen: string;
+    date: string;
+    showTime: string;
+    ticketPrice: number;
+};
+
 function EditBooking() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -28,7 +46,9 @@ function EditBooking() {
     const [booking, setBooking] = useState<Booking | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-
+    const [bookedSeats, setBookedSeats] = useState<number[]>([]);
+    const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
+    const [show, setShow] = useState<Show | null>(null);
     useEffect(() => {
         const fetchBooking = async () => {
             try {
@@ -39,7 +59,26 @@ function EditBooking() {
                 const data = response.data;
 
                 setBooking(data);
+                setSelectedSeats(data.seats);
 
+                const bookingsResponse = await api.get<BookingItem[]>(
+                    `/bookings?showId=${data.showId}`
+                );
+
+                const otherBookedSeats = bookingsResponse.data
+                    .filter(
+                        (item) =>
+                            item.id !== data.id &&
+                            item.bookingStatus === "Confirmed"
+                    )
+                    .flatMap((item) => item.seats);
+
+                setBookedSeats(otherBookedSeats);
+
+                const showResponse = await api.get<Show>(
+                    `/shows/${data.showId}`
+                );
+                setShow(showResponse.data);
                 setFormData({
                     customerName: data.customerName,
                     email: data.email,
@@ -69,10 +108,20 @@ function EditBooking() {
 
         setError("");
     };
+    const handleSeatClick = (seatNumber: number) => {
+        if (bookedSeats.includes(seatNumber)) {
+            return;
+        }
 
+        setSelectedSeats((prev) =>
+            prev.includes(seatNumber)
+                ? prev.filter((seat) => seat !== seatNumber)
+                : [...prev, seatNumber]
+        );
+    };
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
+        setError("");
         if (
             !formData.customerName ||
             !formData.email ||
@@ -81,11 +130,33 @@ function EditBooking() {
             setError("Please fill in all fields.");
             return;
         }
+        if (selectedSeats.length === 0) {
+            setError("Please select at least one seat.");
+            return;
+        }
+
+
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailPattern.test(formData.email)) {
+            setError("Please enter a valid email address.");
+            return;
+        }
+
+        const phonePattern = /^[0-9]{10}$/;
+
+        if (!phonePattern.test(formData.phone)) {
+            setError("Phone number must contain exactly 10 digits.");
+            return;
+        }
 
         try {
             await api.put(`/bookings/${id}`, {
                 ...booking,
                 ...formData,
+                seats: selectedSeats,
+                numberOfTickets: selectedSeats.length,
+                totalAmount: selectedSeats.length * (show?.ticketPrice || 0),
             });
 
             navigate("/bookings");
@@ -166,8 +237,15 @@ function EditBooking() {
                             type="tel"
                             name="phone"
                             value={formData.phone}
-                            onChange={handleChange}
+                            onChange={(e) =>
+                                setFormData({
+                                    ...formData,
+                                    phone: e.target.value.replace(/\D/g, ""),
+                                })
+                            }
+                            maxLength={10}
                             className="w-full rounded border p-3"
+                            placeholder="Enter 10-digit phone number"
                         />
                     </div>
 
@@ -192,19 +270,48 @@ function EditBooking() {
                     </div>
 
                     <div className="rounded-lg bg-gray-100 p-4">
-                        <p>
-                            <strong>Seats:</strong>{" "}
-                            {booking.seats.join(", ")}
+                        <p className="mb-3 font-semibold">
+                            Select Seats:
+                        </p>
+
+                        <div className="grid grid-cols-5 gap-3 sm:grid-cols-8">
+                            {Array.from({ length: 40 }, (_, index) => index + 1).map(
+                                (seat) => {
+                                    const isBooked = bookedSeats.includes(seat);
+                                    const isSelected = selectedSeats.includes(seat);
+
+                                    return (
+                                        <button
+                                            key={seat}
+                                            type="button"
+                                            disabled={isBooked}
+                                            onClick={() => handleSeatClick(seat)}
+                                            className={`rounded-lg p-3 text-sm font-medium ${isBooked
+                                                ? "cursor-not-allowed bg-red-500 text-white"
+                                                : isSelected
+                                                    ? "bg-green-500 text-white"
+                                                    : "bg-white hover:bg-blue-100"
+                                                }`}
+                                        >
+                                            {seat}
+                                        </button>
+                                    );
+                                }
+                            )}
+                        </div>
+
+                        <p className="mt-4">
+                            <strong>Selected Seats:</strong>{" "}
+                            {selectedSeats.join(", ")}
                         </p>
 
                         <p>
-                            <strong>Tickets:</strong>{" "}
-                            {booking.numberOfTickets}
+                            <strong>Number of Tickets:</strong>{" "}
+                            {selectedSeats.length}
                         </p>
 
-                        <p>
-                            <strong>Total:</strong> ₹
-                            {booking.totalAmount}
+                        <p className="mt-2 text-lg font-bold">
+                            Total: ₹{show ? selectedSeats.length * show.ticketPrice : 0}
                         </p>
                     </div>
 

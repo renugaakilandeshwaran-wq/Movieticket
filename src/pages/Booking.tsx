@@ -67,16 +67,45 @@ function Booking() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!customerName || !email || !phone) {
+        if (!customerName.trim() || !email.trim() || !phone.trim()) {
             setError("Please fill in all fields.");
+            return;
+        }
+
+        // customer Name validation
+        if (customerName.trim().length < 3) {
+            setError("Customer name must be at least 3 character.");
+            return;
+        }
+
+        // Email validation
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+            setError("Please enter a valid email address.");
+            return;
+        }
+
+
+        // phone validation
+        const phonePattern = /^[0-9]{10}$/;
+
+        if (!phonePattern.test(phone)) {
+            setError("Phone number must contain exactly 10 digits.");
+            return;
+        }
+
+        // seat validation
+
+        if (selectedSeats.length === 0) {
+            setError("Please select at least one seat.")
             return;
         }
 
         try {
             await api.post("/bookings", {
-                customerName,
-                email,
-                phone,
+                customerName: customerName.trim(),
+                email: email.trim(),
+                phone: phone.trim(),
                 showId: id,
                 seats: selectedSeats,
                 numberOfTickets: selectedSeats.length,
@@ -84,7 +113,11 @@ function Booking() {
                 bookingStatus: "Confirmed",
             });
 
-            navigate("/bookings");
+            navigate("/bookings", {
+                state: {
+                    bookingSuccess: true,
+                },
+            });
         } catch (error) {
             console.error("Failed to create booking:", error);
             setError("Failed to create booking.");
@@ -224,10 +257,12 @@ function Booking() {
                             type="tel"
                             value={phone}
                             onChange={(e) =>
-                                setPhone(e.target.value)
+                                setPhone(e.target.value.replace(/\D/g, ""))
                             }
+                            maxLength={10}
+
                             className="w-full rounded border p-3"
-                            placeholder="Enter your phone number"
+                            placeholder="Enter 10-digit phone number"
                         />
                     </div>
 
